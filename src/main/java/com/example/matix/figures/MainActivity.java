@@ -7,9 +7,11 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.LinearLayout;
@@ -20,6 +22,8 @@ import com.example.matix.figures.figury.Trojkat;
 import com.example.matix.figures.figury.Kolo;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Random;
 
 
@@ -28,6 +32,7 @@ public class MainActivity extends Activity {
 
     final Figura[] figury = generateFigures();
     int numberElements = figury.length;
+    private CustomAdapter customAdapter;
 
 
     @Override
@@ -35,17 +40,35 @@ public class MainActivity extends Activity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);   //wczytywanie layout'u statycznego
-
-
         LinearLayout ln = (LinearLayout) findViewById(R.id.linearLayout1);
 
-        Context context = getApplicationContext();
+        buildListView();
 
-        ListView listView=(ListView)findViewById(R.id.listView);
 
-        CustomAdapter customAdapter = new CustomAdapter(context, figury);
+        Button buttonSort = findViewById(R.id.button_sort_rodzaj);
+        buttonSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sortArray(1);
+            }
+        });
 
-        listView.setAdapter(customAdapter);
+        Button buttonSortPole = findViewById(R.id.button_sort_pole);
+        buttonSortPole.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sortArray(2);
+            }
+        });
+
+        Button buttonSortCecha = findViewById(R.id.button_sort_cecha);
+        buttonSortCecha.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sortArray(3);
+            }
+        });
+
 
     }
 
@@ -78,6 +101,38 @@ public class MainActivity extends Activity {
         }
 
         return figury;
+
+    }
+
+    public void sortArray(int parametr){
+
+        switch(parametr){
+
+            case 1:
+                Arrays.sort(figury, new Sortbyrodzaj());
+                break;
+
+            case 2:
+                Arrays.sort(figury, new SortbyPole());
+                break;
+
+            case 3:
+                Arrays.sort(figury, new SortbyCecha());
+                break;
+
+        }
+        customAdapter.notifyDataSetChanged();
+
+    }
+
+
+
+    private void buildListView() {
+
+        Context context = getApplicationContext();
+        ListView listView=(ListView)findViewById(R.id.listView);
+        customAdapter = new CustomAdapter(context, figury);
+        listView.setAdapter(customAdapter);
 
     }
 
